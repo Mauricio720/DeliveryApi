@@ -50,5 +50,5 @@ SalesModel.belongsTo(UserModel,{
 
 SalesModel.belongsTo(AddressModel,{
     constraints:true,
-    foreignKey:'id_selected_addres'
+    foreignKey:'id_address'
 });

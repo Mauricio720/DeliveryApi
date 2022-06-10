@@ -1,6 +1,6 @@
-import { STRING } from 'sequelize';
 import {Model, DataTypes}  from 'sequelize';
 import {sequelize} from '../instances/mysql';
+import {hashSync} from '../helpers/hashPassword';
 
 export interface UserIntance extends Model{
     id:number,
@@ -34,13 +34,18 @@ export const UserModel=sequelize.define<UserIntance>('users',{
     password:{
         type:DataTypes.STRING,
         set(value:string){
-            this.setDataValue('password','1234');
+            let password=hashSync(value);
+            this.setDataValue('password',password);
         }
     },
 
     profileImg:{
         type:DataTypes.STRING,
-        defaultValue:'default.jpg'
+        defaultValue:'default.jpg',
+        get(){
+            let value=this.getDataValue('profileImg');
+            return `${process.env.BASE_URL}/media/users/${value}`;
+        }
     },
 
     permissions:{
@@ -49,3 +54,6 @@ export const UserModel=sequelize.define<UserIntance>('users',{
 },{
     tableName:'users'
 })
+
+
+

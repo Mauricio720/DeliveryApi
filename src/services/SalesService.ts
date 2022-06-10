@@ -1,4 +1,5 @@
-import { SalesModel} from "../models/SalesModel"
+import { AddressModel } from "../models/AddressModel";
+import { SalesIntance, SalesModel} from "../models/SalesModel"
 
 export default {
     add:async (subtotal:number,total:number,idUser:number,observation:string,idAddress:number)=>{
@@ -20,5 +21,36 @@ export default {
         }
 
         return idSale;
+    },
+
+    getByUser:async (idUser:number)=>{
+        let allSales:SalesIntance[]=[];
+        try {
+            allSales=await SalesModel.findAll({where:{id_user:idUser}});
+        } catch (error:any) {
+            console.log(error);
+        }
+
+        return allSales;
+    },
+
+    getById:async (idSale:number)=>{
+        let sale=undefined;
+
+        try {
+            sale=await SalesModel.findOne({
+                where:{id:idSale},
+                include: [{
+                    model: AddressModel,
+                    required: true,
+                    nested: true 
+                }]
+            }) ;
+        } catch (error:any) {
+            console.log(error);
+        }
+
+        return sale;
     }
-}
+};
+

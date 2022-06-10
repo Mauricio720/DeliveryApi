@@ -4,9 +4,10 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import mainRoutes from './routes/mainApi';
 import bodyParse from 'body-parser';
+import {MulterError} from 'multer';
+
 
 dotenv.config();
-
 const server = express();
 
 server.use(cors());
@@ -24,5 +25,16 @@ server.use((req: Request, res: Response) => {
     res.status(404);
     res.json({error: 'Endpoint não encontrado.'});
 });
+
+const errorHandler:ErrorRequestHandler=(err,req,res,next)=>{
+    res.status(400);
+    if(err instanceof MulterError){
+        res.json({error:err.code})
+    }else{
+        console.log(err);
+        res.json({error: 'Ocorreu algum erro!'});
+    }
+}
+server.use(errorHandler);
 
 server.listen(process.env.PORT);

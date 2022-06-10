@@ -1,15 +1,18 @@
 import {Model, DataTypes}  from 'sequelize';
 import {sequelize} from '../instances/mysql';
 import { SalesModel } from './SalesModel';
-import { ProductModel } from './ProductsModel';
+import { ProductIntance } from './ProductsModel';
 
 export interface ItemsSaleIntance extends Model{
     id:number,
-    subtotal:number,
-    total:number,
+    id_product:number,
+    unit_price:number,
+    total_price:number,
+    quantity:number,
     id_user:number,
     observation:string,
-    id_sale:number
+    id_sale:number,
+    product:ProductIntance
 }
 
 export const ItemsSaleModel=sequelize.define<ItemsSaleIntance>('products',{
@@ -23,16 +26,24 @@ export const ItemsSaleModel=sequelize.define<ItemsSaleIntance>('products',{
         type:DataTypes.INTEGER
     },
 
-    number:{
+    quantity:{
         type:DataTypes.INTEGER
     },
 
     unit_price:{
-        type:DataTypes.DECIMAL
+        type:DataTypes.DECIMAL,
+        get(){
+            let value=this.getDataValue('unit_price');
+            return parseFloat(value);
+        }
     },
 
     total_price:{
-        type:DataTypes.DECIMAL
+        type:DataTypes.DECIMAL,
+        get(){
+            let value=this.getDataValue('total_price');
+            return parseFloat(value);
+        }
     },
 
     id_sale:{
@@ -47,12 +58,7 @@ export const ItemsSaleModel=sequelize.define<ItemsSaleIntance>('products',{
     timestamps:false
 });
 
-ItemsSaleModel.belongsTo(ProductModel,{
-    constraints:true,
-    foreignKey:'id_products'
-});
 
 ItemsSaleModel.belongsTo(SalesModel,{
-    constraints:true,
-    foreignKey:'id_sale'
+    foreignKey:'id'
 });

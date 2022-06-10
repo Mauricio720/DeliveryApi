@@ -22,5 +22,17 @@ export default {
         } catch (error:any) {
             console.log(error);
         }
+    },
+
+    getById:async (id:number)=>{
+        let product=undefined;
+        try {
+            product=await ProductModel.findByPk(id);
+            
+        } catch (error:any) {
+            console.log(error);
+        }
+
+        return product;
     }
 }

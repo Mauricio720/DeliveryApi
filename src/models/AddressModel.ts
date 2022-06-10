@@ -5,12 +5,12 @@ import { UserModel } from './UserModel';
 export interface AddressIntance extends Model{
     id:number,
     street:string,
-    number:number,
+    number:string,
     neighborhood:string,
     city:string,
     state:string,
     cep:string,
-    complement:string,
+    complement?:string,
     id_user:number
 }
 

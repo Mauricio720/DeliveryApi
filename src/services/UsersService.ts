@@ -1,6 +1,9 @@
-import {UserModel} from '../models/UserModel';
+import {UserIntance, UserModel} from '../models/UserModel';
 import {hashCompare,hash} from '../helpers/hashPassword';
-import { AddressModel } from '../models/AddressModel';
+import { AddressIntance, AddressModel } from '../models/AddressModel';
+import sharp from 'sharp';
+import { unlink } from 'fs/promises';
+
 
 export default {
     getAll: async ()=>{
@@ -23,11 +26,11 @@ export default {
         }
     },
 
-    login: async(email:string,password:string)=>{
+    login: async(email:string,password:string,type:number)=>{
         let userResult=undefined;
         
         try{
-            let user=await UserModel.findOne({where:{email}});
+            let user=await UserModel.findOne({where:{email,type}});
             if(user){
                 let responsePass=await hashCompare(password,user.password)
                 if(responsePass){
@@ -42,37 +45,47 @@ export default {
         return userResult;
     },
 
-    add: async (name:string,email:string,permissions:string) => {
-        let success=false;
+    add: async (name:string,email:string,password:string,permissions:string,
+            type:number,profileImg?:string) => {
+        let user=undefined;
+        
         try {
-            UserModel.create({
+            user=await UserModel.create({
                 name,
                 email,
+                password,
                 permissions,
-                type:1,
+                type,
+                profileImg
             });
-            success=true;
-
+            
         } catch (error:any) {
             console.log(error);
         }
 
-        return success;
+        return user;
     },
 
-    update: async (id:number,name:string='',email:string='',pass:string='',permissions:string='')=>{
-        let success=false;
+    update: async (id:number,name:string='',email:string='',pass:string=''
+        ,permissions:string='',profileImg?:string)=>{
+        let user=undefined;
         try {
-            let user=await UserModel.findByPk(id);
+            user=await UserModel.findByPk(id);
             
             if(user){
                 user.name=name!==''?name:user.name;
                 user.email=email!==''?email:user.email;
-                user.password=pass?pass:user.password;    
+                if(pass!==''){
+                    user.password=user.password;    
+                }
                 user.permissions=permissions?permissions:user.permissions;
+                if(profileImg){
+                    verifyAndDeleteOldFile(user,profileImg);
+                    user.profileImg=profileImg;
+                }
+                
+                
                 user.save();
-
-                success=true;
             }
             
 
@@ -80,7 +93,7 @@ export default {
             console.log(error);
         }
 
-        return success;
+        return user;
     },
 
     delete:async (id:number) => {
@@ -97,6 +110,20 @@ export default {
         }
 
         return success;
+    },
+
+    uploadFile:async(file:Express.Multer.File)=>{
+        if(file){
+            await sharp(file.path)
+            .toFormat('jpeg')
+            .toFile(`./public/media/users/${file.filename}.jpg`);
+
+            await unlink(file.path);
+            
+            return `${file.filename}.jpg`;
+        }else{
+            return 'default.jpg';
+        }
     },
 
     addAddress:async (street:string,number:string,neighborhood:string,city:string,
@@ -123,8 +150,55 @@ export default {
         }
 
         return success;
+    },
+
+    updateAddress:async (id:number,street?:string,number?:string,neighborhood?:string,city?:string,
+        state?:string,cep?:string,complement?:string)=>{
+    
+    let address=undefined;
+    
+    try {
+        let addressModel=await AddressModel.findByPk(id);
+
+        if(addressModel){
+            addressModel.street=street?street:addressModel.street;
+            addressModel.number=number?number:addressModel.number;
+            addressModel.neighborhood=neighborhood?neighborhood:addressModel.neighborhood;
+            addressModel.city=city?city:addressModel.city;
+            addressModel.state=state?state:addressModel.state;
+            addressModel.cep=cep?cep:addressModel.cep;
+            addressModel.complement=complement?complement:addressModel.complement;
+            addressModel.save();
+
+            address=await AddressModel.findAll({where:{id_user:addressModel.id_user}});
+        }
+       
+        } catch (error:any) {
+            console.log(error);
+        }
+
+        return address;
+    },
+
+    getAllAddress:async (idUser:number)=>{
+        let allAddress:AddressIntance[]=[];
+        try {
+            allAddress=await AddressModel.findAll({where:{id_user:idUser}}); 
+        } catch (error:any) {
+            console.log(error);
+        }
+
+        return allAddress;
     }
     
+}
+
+const verifyAndDeleteOldFile=(user:UserIntance,profileFile:string)=>{
+    let profileImg=user.profileImg.split('/')[5];
+    
+    if(profileImg !== profileFile && profileImg !== "default.jpg"){
+        unlink('public/media/users/'+profileImg);
+    }
 }
 
 

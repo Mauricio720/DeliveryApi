@@ -1,18 +1,18 @@
 import {Model, DataTypes}  from 'sequelize';
 import {sequelize} from '../instances/mysql';
-import { UserModel } from './UserModel';
 import dotenv from 'dotenv';
+import { ItemsSaleModel } from './ItemsSaleModel';
 
 dotenv.config();
 
 export interface ProductIntance extends Model{
     id:number,
     name:string,
-    type:number,
-    email:string,
-    password:string,
-    profileImg:string,
-    permissions:string,
+    description:number,
+    full_price:number,
+    half_price:number,
+    img:string,
+    id_user:string,
 }
 
 export const ProductModel=sequelize.define<ProductIntance>('products',{
@@ -51,7 +51,7 @@ export const ProductModel=sequelize.define<ProductIntance>('products',{
         defaultValue:'default.jpg',
         get(){
             let value=this.getDataValue('img');
-            return `${process.env.BASE_URL}/media/${value}`;
+            return `${process.env.BASE_URL}/media/pizzas/${value}`;
         }
     },
 
@@ -62,7 +62,6 @@ export const ProductModel=sequelize.define<ProductIntance>('products',{
     tableName:'products'
 });
 
-ProductModel.belongsTo(UserModel,{
-    constraints:true,
-    foreignKey:'id_user'
+ProductModel.hasMany(ItemsSaleModel,{
+    foreignKey:'id_product'
 })
