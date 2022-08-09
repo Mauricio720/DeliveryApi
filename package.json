@@ -33,8 +33,9 @@
     "@types/express": "^4.17.13",
     "@types/jsonwebtoken": "^8.5.8",
     "@types/mustache-express": "^1.2.1",
-    "@types/node": "^17.0.24",
+    "@types/node": "^17.0.45",
     "@types/sequelize": "^4.28.11",
-    "@types/sharp": "^0.30.2"
+    "@types/sharp": "^0.30.2",
+    "tslib": "^2.4.0"
   }
 }
