@@ -6,10 +6,10 @@ Esse projeto foi desenvolvido cpm o objetivo de treinar e estudar o Node com o t
 ## Agora instale os pacotes necessários
 Os pacotes do node foram utilizado globalmente no desenvolvimento desse projeto, por essa razão,  você precisa instalar o ambiente node utilizando os comandos abaixo:
 
-npm install -g typescript
-npm install -g ts-node
-npm install -g nodemon
-npm install -D tslib @types/node
+npm install -g typescript <br />
+npm install -g ts-node <br />
+npm install -g nodemon <br />
+npm install -D tslib @types/node <br />
 
 Após isso use o comando npm start para instalar o restante das dependencias.
 
