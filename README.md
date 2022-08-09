@@ -21,8 +21,8 @@ faça o passo abaixo
 ## Migration e seeders
 Esse projeto tem as migrations e as seeders necessárias para já criar o projeto no banco de dados de sua preferência]. Use os comandos abaixo:
 
-npx sequelize-cli db:create
-npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
+npx sequelize-cli db:create <br />
+npx sequelize-cli db:migrate <br />
+npx sequelize-cli db:seed:all <br />
 
 Agora só usar o comando npm start e rodar a api.
